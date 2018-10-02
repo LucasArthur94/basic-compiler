@@ -34,18 +34,29 @@ class CharParser
 
   def parse_char_all_lines
     self.read
-    parsed_lines = @lines.map do |line|
-      parse_char(line)
+
+    lines_and_chars = LinkedList::List.new
+
+    @lines.each do |line|
+      lines_and_chars.push(parse_char(line))
     end
     self.finish
-    parsed_lines
+    lines_and_chars
   end
 
   private
 
   def parse_char(line)
     self.read_line
-    chars = line.split("")
+
+    chars = LinkedList::List.new
+
+    chars_list = line.split("")
+
+    chars_list.each do |char|
+      chars.push(char)
+    end
+
     self.finish_line
     chars
   end

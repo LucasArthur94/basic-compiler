@@ -1,6 +1,8 @@
 require 'aasm'
+require 'linked-list'
 
 include AASM
+include LinkedList
 
 class LineParser
   def initialize(content)
@@ -26,7 +28,14 @@ class LineParser
 
   def parse_lines
     self.read
-    lines = @content.split("\n")
+
+    simple_lines = @content.split("\n")
+    lines = LinkedList::List.new
+
+    simple_lines.each do |line|
+      lines.push(line)
+    end
+
     self.finish
     lines
   end
