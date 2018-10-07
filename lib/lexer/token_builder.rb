@@ -21,7 +21,7 @@ class TokenBuilder
     end
 
     event :recognize_delimiter do
-        transitions from: [:build_token, :build_special], to: :pass_delimiter
+        transitions from: [:build_token, :build_special, :pass_delimiter], to: :pass_delimiter
     end
 
     event :reset_token_reading do
