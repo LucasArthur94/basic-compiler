@@ -44,51 +44,34 @@ class TokenBuilder
   def tokenize_line(line)
     tokenized_line = LinkedList::List.new
 
-    partial_common_token = ""
-    partial_special_token = ""
+    partial_token = ""
 
     line.each do |classified_char|
         case classified_char.type
         when :letter
-            if self.build_special?
-                tokenized_line.push(Token.new(partial_special_token, :special))
-                partial_special_token = ""
-            end
             self.building_token
-            partial_common_token += classified_char.char
+            partial_token += classified_char.char
         when :number
-            if self.build_special?
-                tokenized_line.push(Token.new(partial_special_token, :special))
-                partial_special_token = ""
-            end
             self.building_token
-            partial_common_token += classified_char.char
+            partial_token += classified_char.char
         when :special
             if self.build_token?
-                tokenized_line.push(Token.new(partial_common_token, :common))
-                partial_common_token = ""
+                tokenized_line.push(Token.new(partial_token, :common))
+                partial_token = ""
             end
             self.building_special
-            partial_special_token += classified_char.char
+            tokenized_line.push(Token.new(classified_char.char, :special))
         when :delimiter
             if self.build_token?
-                tokenized_line.push(Token.new(partial_common_token, :common))
-                partial_common_token = ""
-            end
-            if self.build_special?
-                tokenized_line.push(Token.new(partial_special_token, :special))
-                partial_special_token = ""
+                tokenized_line.push(Token.new(partial_token, :common))
+                partial_token = ""
             end
             self.recognize_delimiter
         end
     end
     if self.build_token?
-        tokenized_line.push(Token.new(partial_common_token, :common))
-        partial_common_token = ""
-    end
-    if self.build_special?
-        tokenized_line.push(Token.new(partial_special_token, :special))
-        partial_special_token = ""
+        tokenized_line.push(Token.new(partial_token, :common))
+        partial_token = ""
     end
     self.reset_token_reading
     tokenized_line

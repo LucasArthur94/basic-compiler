@@ -53,11 +53,36 @@ class TokenRebuilder
         when "FN"
             rebuilded_token += classified_token.string
             retokenized_line.push(Token.new(rebuilded_token, :special))
+            rebuilded_token = ""
             self.bypass_token
         when "TO"
             rebuilded_token += classified_token.string
             retokenized_line.push(Token.new(rebuilded_token, :special))
+            rebuilded_token = ""
             self.bypass_token
+        when "<"
+            rebuilded_token += classified_token.string
+            self.rebuilding_token
+        when ">"
+            if self.rebuild_token?
+                rebuilded_token += classified_token.string
+                retokenized_line.push(Token.new(rebuilded_token, :special))
+                rebuilded_token = ""
+                self.bypass_token
+            else
+                rebuilded_token += classified_token.string
+                self.rebuilding_token
+            end
+        when "="
+            if self.rebuild_token?
+                rebuilded_token += classified_token.string
+                retokenized_line.push(Token.new(rebuilded_token, :special))
+                rebuilded_token = ""
+                self.bypass_token
+            else
+                retokenized_line.push(classified_token)
+                self.bypass_token
+            end
         when " "
             if self.rebuild_token?
                 rebuilded_token += classified_token.string
@@ -66,6 +91,10 @@ class TokenRebuilder
                 self.bypass_token
             end
         else
+            unless rebuilded_token.empty?
+                retokenized_line.push(Token.new(rebuilded_token, :special))
+                rebuilded_token = ""
+            end
             retokenized_line.push(classified_token)
             self.bypass_token
         end

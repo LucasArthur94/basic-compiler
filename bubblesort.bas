@@ -16,7 +16,7 @@
 2000 REM Bubble sort the list A of length N
 2010 FOR I = 1 TO N - 1
 2020 FOR J = 1 TO N - I
-2030 IF A[J] <= A[J+1] THEN GOTO 2070
+2030 IF A[J] <= A[J+1] THEN GO TO 2070
 2040 LET X = A[J]
 2050 LET A[J] = A[J+1]
 2060 LET A[J+1] = X
