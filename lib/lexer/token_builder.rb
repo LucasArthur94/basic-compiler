@@ -25,7 +25,7 @@ class TokenBuilder
     end
 
     event :reset_token_reading do
-        transitions from: [:idle, :build_token, :build_special, :pass_delimiter], to: :idle
+        transitions from: [:build_token, :build_special, :pass_delimiter], to: :idle
     end
   end
 
