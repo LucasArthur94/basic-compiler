@@ -1,6 +1,8 @@
 require 'aasm'
+require 'linked-list'
 
 include AASM
+include LinkedList
 
 class CharParser
   def initialize(lines)

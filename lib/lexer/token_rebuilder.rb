@@ -1,7 +1,9 @@
 require 'aasm'
+require 'linked-list'
 require_relative '../helpers/token'
 
 include AASM
+include LinkedList
 
 class TokenRebuilder
   def initialize(tokens_classified_per_line)

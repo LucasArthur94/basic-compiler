@@ -1,7 +1,9 @@
 require 'aasm'
+require 'linked-list'
 require_relative '../helpers/classified_char'
 
 include AASM
+include LinkedList
 
 class AsciiCategorizer
   def initialize(chars_per_line)
