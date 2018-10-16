@@ -1,11 +1,16 @@
 require 'aasm'
 require 'linked-list'
 require_relative '../helpers/token'
+require_relative '../helpers/invalid_token_exception'
 
 include AASM
 include LinkedList
 
 class TokenRebuilder
+  RESERVED_KEYWORDS = %w[LET END SIN COS TAN ATN EXP ABS LOG SQR INT
+                           RND READ DATA PRINT GOTO GO TO IF THEN FOR TO
+                           STEP NEXT DIM DEF FN GOSUB RETURN REM E].freeze
+
   def initialize(tokens_classified_per_line)
     @tokens_classified_per_line = tokens_classified_per_line
   end
@@ -39,12 +44,24 @@ class TokenRebuilder
 
   private
 
+  def is_reserved_keyword?(token)
+    RESERVED_KEYWORDS.include?(token.string.upcase)
+  end
+
+  def is_valid_identifier?(token)
+    token.string =~ /[0-9]+|[a-zA-Z][0-9]?/
+  end
+
   def tokenize_line(line)
     retokenized_line = LinkedList::List.new
 
     rebuilded_token = ""
 
     line.each do |classified_token|
+        if classified_token.type == :common && !is_reserved_keyword?(classified_token) && !is_valid_identifier?(classified_token)
+            raise InvalidTokenException, 'Token não é válido'
+        end
+
         case classified_token.string
         when "DEF"
             rebuilded_token += classified_token.string

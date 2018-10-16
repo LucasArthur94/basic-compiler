@@ -83,7 +83,7 @@ class AsciiCategorizer
     elsif char =~ /[0-9]/
         type = :number
         util = true
-    elsif char =~ /[\!\@\#\%\¨\&\*\(\)\_\+\-\=\§\{\[\a\}\]\o\?\/\°\`\´\^\~\<\,\>\.\:\;\|\\\“\”\"]/
+    elsif char =~ /[\!\@\#\%\¨\&\*\(\)\_\+\-\=\§\{\[\ª\}\]\º\?\/\°\`\´\^\~\<\,\>\.\:\;\|\\\“\”\"]/
         type = :special
         util = true
     else
