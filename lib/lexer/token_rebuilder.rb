@@ -58,10 +58,6 @@ class TokenRebuilder
     rebuilded_token = ""
 
     line.each do |classified_token|
-        if classified_token.type == :common && !is_reserved_keyword?(classified_token) && !is_valid_identifier?(classified_token)
-            # raise InvalidTokenException, 'Token não é válido'
-        end
-
         case classified_token.string
         when "DEF"
             rebuilded_token += classified_token.string
@@ -71,12 +67,12 @@ class TokenRebuilder
             self.rebuilding_token
         when "FN"
             rebuilded_token += classified_token.string
-            retokenized_line.push(Token.new(rebuilded_token, :special))
+            retokenized_line.push(Token.new(rebuilded_token, :reservated))
             rebuilded_token = ""
             self.bypass_token
         when "TO"
             rebuilded_token += classified_token.string
-            retokenized_line.push(Token.new(rebuilded_token, :special))
+            retokenized_line.push(Token.new(rebuilded_token, :reservated))
             rebuilded_token = ""
             self.bypass_token
         when "<"

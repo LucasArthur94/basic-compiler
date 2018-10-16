@@ -6,6 +6,10 @@ include AASM
 include LinkedList
 
 class TokenBuilder
+  RESERVED_KEYWORDS = %w[LET END SIN COS TAN ATN EXP ABS LOG SQR INT
+                           RND READ DATA PRINT GOTO GO TO IF THEN FOR TO
+                           STEP NEXT DIM DEF FN GOSUB RETURN REM E].freeze
+
   def initialize(chars_classified_per_line)
     @chars_classified_per_line = chars_classified_per_line
   end
@@ -43,6 +47,10 @@ class TokenBuilder
 
   private
 
+  def is_reserved_keyword?(string)
+    RESERVED_KEYWORDS.include?(string.upcase)
+  end
+
   def tokenize_line(line)
     tokenized_line = LinkedList::List.new
 
@@ -58,21 +66,33 @@ class TokenBuilder
             partial_token += classified_char.char
         when :special
             if self.build_token?
-                tokenized_line.push(Token.new(partial_token, :common))
+                if is_reserved_keyword?(partial_token)
+                    tokenized_line.push(Token.new(partial_token, :reservated))
+                else
+                    tokenized_line.push(Token.new(partial_token, :common))
+                end
                 partial_token = ""
             end
             self.building_special
             tokenized_line.push(Token.new(classified_char.char, :special))
         when :delimiter
             if self.build_token?
-                tokenized_line.push(Token.new(partial_token, :common))
+                if is_reserved_keyword?(partial_token)
+                    tokenized_line.push(Token.new(partial_token, :reservated))
+                else
+                    tokenized_line.push(Token.new(partial_token, :common))
+                end
                 partial_token = ""
             end
             self.recognize_delimiter
         end
     end
     if self.build_token?
-        tokenized_line.push(Token.new(partial_token, :common))
+        if is_reserved_keyword?(partial_token)
+            tokenized_line.push(Token.new(partial_token, :reservated))
+        else
+            tokenized_line.push(Token.new(partial_token, :common))
+        end
         partial_token = ""
     end
     self.reset_token_reading
