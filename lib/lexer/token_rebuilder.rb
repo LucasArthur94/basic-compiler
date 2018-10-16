@@ -49,7 +49,7 @@ class TokenRebuilder
   end
 
   def is_valid_identifier?(token)
-    token.string =~ /[0-9]+|[a-zA-Z][0-9]?/
+    token.string =~ /[a-zA-Z][0-9]?/
   end
 
   def tokenize_line(line)
@@ -59,7 +59,7 @@ class TokenRebuilder
 
     line.each do |classified_token|
         if classified_token.type == :common && !is_reserved_keyword?(classified_token) && !is_valid_identifier?(classified_token)
-            raise InvalidTokenException, 'Token não é válido'
+            # raise InvalidTokenException, 'Token não é válido'
         end
 
         case classified_token.string
