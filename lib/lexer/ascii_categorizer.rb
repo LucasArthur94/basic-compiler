@@ -1,9 +1,11 @@
 require 'aasm'
 require 'linked-list'
 require_relative '../helpers/classified_char'
+require_relative '../helpers/lexer_automatas'
 
 include AASM
 include LinkedList
+include LexerAutomatas
 
 class AsciiCategorizer
   def initialize(chars_per_line)
@@ -74,20 +76,20 @@ class AsciiCategorizer
   def classify_char(char)
     self.read_char
 
-    if char =~ /[\ ]/
+    if char =~ LexerAutomatas::DELIMITER
         type = :delimiter
         util = false
-    elsif char =~ /[a-zA-Z]/
+    elsif char =~ LexerAutomatas::LETTER
         type = :letter
         util = true
-    elsif char =~ /[0-9]/
-        type = :number
+    elsif char =~ LexerAutomatas::DIGIT
+        type = :digit
         util = true
-    elsif char =~ /[\!\@\#\%\¨\&\*\(\)\_\+\-\=\§\{\[\ª\}\]\º\?\/\°\`\´\^\~\<\,\>\.\:\;\|\\\“\”\"]/
+    elsif char =~ LexerAutomatas::SPECIAL
         type = :special
         util = true
     else
-        type = :special
+        type = :letter
         util = true
     end
 

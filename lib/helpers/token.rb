@@ -1,5 +1,5 @@
 class Token
-    attr_reader :string, :type
+    attr_accessor :string, :type
 
     def initialize(string, type)
         @string = string
