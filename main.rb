@@ -1,9 +1,9 @@
-require_relative 'lexer/file_reader'
-require_relative 'lexer/line_parser'
-require_relative 'lexer/char_parser'
-require_relative 'lexer/ascii_categorizer'
-require_relative 'lexer/token_builder'
-require_relative 'lexer/token_rebuilder'
+require_relative 'lib/lexer/file_reader'
+require_relative 'lib/lexer/line_parser'
+require_relative 'lib/lexer/char_parser'
+require_relative 'lib/lexer/ascii_categorizer'
+require_relative 'lib/lexer/token_builder'
+require_relative 'lib/lexer/token_rebuilder'
 
 def main
   # Nível 0 de abstração
@@ -34,7 +34,7 @@ def main
   tokens_reclassified_per_line.each do |line|
     p "============="
     p "Linha #{tokens_reclassified_per_line.to_a.index(line) + 1}"
-    line.each { |char| p char }
+    line.each { |token| p token }
   end
 end
 

@@ -7,10 +7,6 @@ include AASM
 include LinkedList
 
 class TokenRebuilder
-  RESERVED_KEYWORDS = %w[LET END SIN COS TAN ATN EXP ABS LOG SQR INT
-                           RND READ DATA PRINT GOTO GO TO IF THEN FOR TO
-                           STEP NEXT DIM DEF FN GOSUB RETURN REM E].freeze
-
   def initialize(tokens_classified_per_line)
     @tokens_classified_per_line = tokens_classified_per_line
   end
@@ -28,7 +24,7 @@ class TokenRebuilder
     end
 
     event :reset_token_reading do
-        transitions from: [:read_token, :rebuild_token], to: :idle
+        transitions from: [:idle, :read_token, :rebuild_token], to: :idle
     end
   end
 
@@ -36,7 +32,7 @@ class TokenRebuilder
     retokenized_lines = LinkedList::List.new
 
     @tokens_classified_per_line.each do |line|
-      retokenized_lines.push(tokenize_line(line))
+      retokenized_lines.push(retokenize_line(line))
     end
 
     retokenized_lines
@@ -44,78 +40,108 @@ class TokenRebuilder
 
   private
 
-  def is_reserved_keyword?(token)
-    RESERVED_KEYWORDS.include?(token.string.upcase)
-  end
+  def retokenize_line(line)
+    undefined_tokens = generate_undefined_tokens(line)
 
-  def is_valid_identifier?(token)
-    token.string =~ /[a-zA-Z][0-9]?/
-  end
+    classify_undefined_tokens!(undefined_tokens) if undefined_tokens
 
-  def tokenize_line(line)
-    retokenized_line = LinkedList::List.new
-
-    rebuilded_token = ""
+    read_undefined = false
 
     line.each do |classified_token|
-        case classified_token.string
-        when "DEF"
-            rebuilded_token += classified_token.string
-            self.rebuilding_token
-        when "GO"
-            rebuilded_token += classified_token.string
-            self.rebuilding_token
-        when "FN"
-            rebuilded_token += classified_token.string
-            retokenized_line.push(Token.new(rebuilded_token, :reservated))
-            rebuilded_token = ""
-            self.bypass_token
-        when "TO"
-            rebuilded_token += classified_token.string
-            retokenized_line.push(Token.new(rebuilded_token, :reservated))
-            rebuilded_token = ""
-            self.bypass_token
-        when "<"
-            rebuilded_token += classified_token.string
-            self.rebuilding_token
-        when ">"
-            if self.rebuild_token?
-                rebuilded_token += classified_token.string
-                retokenized_line.push(Token.new(rebuilded_token, :special))
-                rebuilded_token = ""
-                self.bypass_token
-            else
-                rebuilded_token += classified_token.string
-                self.rebuilding_token
-            end
-        when "="
-            if self.rebuild_token?
-                rebuilded_token += classified_token.string
-                retokenized_line.push(Token.new(rebuilded_token, :special))
-                rebuilded_token = ""
-                self.bypass_token
-            else
-                retokenized_line.push(classified_token)
-                self.bypass_token
-            end
-        when " "
-            if self.rebuild_token?
-                rebuilded_token += classified_token.string
-                self.rebuilding_token
-            else
-                self.bypass_token
-            end
+      next unless undefined_tokens
+      if classified_token.type == :undefined
+        line.delete(classified_token)
+        read_undefined = true
+        next
+      elsif read_undefined
+        selected_token = undefined_tokens.shift
+        if selected_token.type != :undefined
+          line.insert(selected_token, before: classified_token)
         else
-            unless rebuilded_token.empty?
-                retokenized_line.push(Token.new(rebuilded_token, :special))
-                rebuilded_token = ""
-            end
-            retokenized_line.push(classified_token)
-            self.bypass_token
+          new_tokens = parse_undefined_token(selected_token)
+          new_tokens.each do |new_token|
+            line.insert(new_token, before: classified_token)
+          end
         end
+        read_undefined = false
+      end
     end
+
+    if read_undefined
+      selected_token = undefined_tokens.shift
+      if selected_token.type != :undefined
+        line.insert(selected_token, after: line.last)
+      else
+        new_tokens = parse_undefined_token(selected_token)
+        new_tokens.each do |new_token|
+          line.insert(new_token, after: line.last)
+        end
+      end
+      read_undefined = false
+    end
+
     self.reset_token_reading
-    retokenized_line
+    line
+  end
+
+  def generate_undefined_tokens(line)
+    undefined_tokens = []
+
+    string_undefined_stack = ""
+
+    line.each do |classified_token|
+      if classified_token.type == :undefined
+        if string_undefined_stack.empty?
+          string_undefined_stack += classified_token.string
+        else
+          string_undefined_stack += ("\ " + classified_token.string)
+        end
+      elsif !string_undefined_stack.empty?
+        undefined_tokens.push(Token.new(string_undefined_stack, :undefined))
+        string_undefined_stack = ""
+      end
+    end
+
+    if !string_undefined_stack.empty?
+      undefined_tokens.push(Token.new(string_undefined_stack, :undefined))
+    end
+
+    undefined_tokens
+  end
+
+  def classify_undefined_tokens!(undefined_tokens)
+    composed_automata = Automata.new(LexerAutomatas::COMPOSED, nil, :composed)
+
+    undefined_tokens.each do |token|
+      composed_automata.verify_situation(token.string)
+
+      if composed_automata.situation == token.string
+        token.type = composed_automata.token_type
+      end
+    end
+  end
+
+  def parse_undefined_token(selected_token)
+    new_tokens = LinkedList::List.new
+
+    identifier_automata = Automata.new(LexerAutomatas::IDENTIFIER, nil, :identifier)
+    special_automata = Automata.new(LexerAutomatas::SPECIAL, nil, :special)
+    snum_automata = Automata.new(LexerAutomatas::SNUM, nil, :number)
+
+    automatas = [special_automata, identifier_automata, snum_automata].sort_by {|automata| automata.situation}
+
+    new_strings = selected_token.string.split("")
+
+    new_strings.each do |string|
+      next if string == "\ "
+      automatas.each { |automata| automata.verify_situation(string) }
+
+      valid_automatas = automatas.select { |automata| automata.situation == string }
+
+      new_tokens.push(Token.new(string, valid_automatas.first.token_type))
+    end
+
+    new_tokens
   end
 
 end
