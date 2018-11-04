@@ -1,5 +1,5 @@
 module LexerAutomatas
-  DELIMITER = /\ /
+  DELIMITER = /[\ \n]/
   LETTER = /[a-zA-Z]/
   DIGIT = /[0-9]/
   SPECIAL = /[\!\@\#\%\¨\&\*\(\)\_\+\-\=\§\{\[\ª\}\]\º\?\/\°\`\´\^\~\<\,\>\.\:\;\|\\\“\”\"]/

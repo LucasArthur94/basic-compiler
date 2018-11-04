@@ -1,8 +1,14 @@
 require_relative 'lib/lexer/file_reader'
+
 require_relative 'lib/lexer/line_parser'
+
 require_relative 'lib/lexer/char_parser'
+
 require_relative 'lib/lexer/ascii_categorizer'
-require_relative 'lib/lexer/token_builder'
+
+require_relative 'lib/lexer/string_builder'
+require_relative 'lib/lexer/rem_builder'
+
 require_relative 'lib/lexer/token_rebuilder'
 
 def main
@@ -22,19 +28,28 @@ def main
   char_classifier = AsciiCategorizer.new(chars_per_line)
   chars_classified_per_line = char_classifier.classify_char_all_lines
 
-  # Nível 5 de abstração
-  token_builder = TokenBuilder.new(chars_classified_per_line)
-  tokens_per_line = token_builder.build_tokens
+  # Nível 5 de abstração - vários motores de eventos
 
-  # Nível 6 de abstração
-  token_rebuilder = TokenRebuilder.new(tokens_per_line)
-  tokens_reclassified_per_line = token_rebuilder.rebuild_tokens
+  # Classificação de Strings
+  string_builder = StringBuilder.new(chars_classified_per_line)
+  tokens_per_line = string_builder.build_tokens
+
+  # Classificação de REM
+  rem_builder = RemBuilder.new(tokens_per_line)
+  tokens_per_line = rem_builder.build_tokens
+
+  # Limpeza dos Delimitadores em Branco
+  clear_delimiter = ClearDelimiter.new(tokens_per_line)
+  tokens_per_line = clear_delimiter.build_tokens
+
+  # # Nível 6 de abstração
+  # token_rebuilder = TokenRebuilder.new(tokens_per_line)
+  # tokens_reclassified_per_line = token_rebuilder.rebuild_tokens
 
   # Impressão dos Tokens
-  tokens_reclassified_per_line.each do |line|
+  tokens_per_line.each do |token|
     p "============="
-    p "Linha #{tokens_reclassified_per_line.to_a.index(line) + 1}"
-    line.each { |token| p token }
+    p token
   end
 end
 
