@@ -39,7 +39,7 @@ class IntegerRecognizer
         token_stack.push(classified_token)
       else
         if self.recognizing?
-          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :integer))
+          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :integer, token_stack))
           token_stack = []
           self.finishing_integer
         end
@@ -48,7 +48,7 @@ class IntegerRecognizer
     end
 
     if self.recognizing?
-      tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :integer))
+      tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :integer, token_stack))
       token_stack = []
       self.finishing_integer
     end

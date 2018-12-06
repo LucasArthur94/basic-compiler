@@ -82,11 +82,12 @@ class RemBuilder
             token_stack.map do |token|
               merged_token += token.string
             end
-            tokenized_lines.push(Token.new(merged_token, :rem))
+            tokenized_lines.push(Token.new(merged_token, :rem, []))
             tokenized_lines.push(classified_token)
             token_stack = []
           end
         else
+          self.cancel_recognizing
           token_stack.each { |token| tokenized_lines.push(token) }
           tokenized_lines.push(classified_token)
           token_stack = []

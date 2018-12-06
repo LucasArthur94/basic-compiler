@@ -16,11 +16,11 @@ class ReservedKeywords
 
     reserved_words = %w[ABS ATN COS DATA
                         DEF DIM END EXP
-                        FN FOR GO GOSUB
+                        FN FOR GOSUB
                         GOTO IF INT LET
                         LOG NEXT PRINT READ
                         REM RETURN RND SIN
-                        SQR STEP TAN THEN TO]
+                        SQR STEP TAN THEN]
 
     @tokens.each do |classified_token|
       case classified_token.type
@@ -28,7 +28,7 @@ class ReservedKeywords
         reserved_stack.push(classified_token)
         new_string = build_string_by_tokens(reserved_stack)
         if reserved_words.include? new_string
-          tokenized_lines.push(Token.new(new_string, :reserved))
+          tokenized_lines.push(Token.new(new_string, :reserved, reserved_stack))
           reserved_stack = []
         end
       else

@@ -55,7 +55,7 @@ class Identifier
         else
           self.recognize_digit
           token_stack.push(classified_token)
-          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :identifier))
+          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :identifier, token_stack))
           token_stack = []
           self.finishing_identifier
         end

@@ -34,7 +34,7 @@ class StringBuilder
         when "\""
           if self.build_string?
             partial_string += classified_char.char
-            tokenized_lines.push(Token.new(partial_string, :string))
+            tokenized_lines.push(Token.new(partial_string, :string, []))
             partial_string = ""
             self.finishing_string
           else
@@ -45,7 +45,7 @@ class StringBuilder
           if self.build_string?
             partial_string += classified_char.char
           else
-            tokenized_lines.push(Token.new(classified_char.char, classified_char.type))
+            tokenized_lines.push(Token.new(classified_char.char, classified_char.type, []))
           end
         end
       end

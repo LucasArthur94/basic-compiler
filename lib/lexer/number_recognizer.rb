@@ -60,14 +60,14 @@ class NumberRecognizer
         elsif self.recognized_E? || self.recognized_signal?
           self.finishing_number
           token_stack.push(classified_token)
-          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number))
+          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number, token_stack))
           token_stack = []
         elsif self.partial_recognition?
           if token_stack.first.type == :integer
             token_stack.push(classified_token)
           else
             self.finishing_number
-            tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number))
+            tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number, token_stack))
             token_stack = []
             tokenized_lines.push(classified_token)
           end
@@ -90,7 +90,7 @@ class NumberRecognizer
         elsif classified_token.string == "+" || classified_token.string == "-"
           if self.partial_recognition?
             self.finishing_number
-            tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number))
+            tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number, token_stack))
             token_stack = []
             tokenized_lines.push(classified_token)
           elsif self.recognized_E?
@@ -115,7 +115,7 @@ class NumberRecognizer
             self.recognize_cientific
           else
             self.finishing_number
-            tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number))
+            tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number, token_stack))
             token_stack = []
             tokenized_lines.push(classified_token)
           end
@@ -128,7 +128,7 @@ class NumberRecognizer
       else
         if self.partial_recognition?
           self.finishing_number
-          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number))
+          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number, token_stack))
         else
           self.cancel_recognizing
           token_stack.each { |token| tokenized_lines.push(token) }
