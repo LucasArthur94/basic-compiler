@@ -13,7 +13,7 @@
 1200 REM Print the sorted array
 1210 GOSUB 4000
 1220 END
-2000 REM Bubble sort the list [A] of length [N]
+2000 REM Bubble sort the list A of length N
 2010 FOR I = 1 TO N - 1
 2020 FOR J = 1 TO N - I
 2030 IF A[J] <= A[J + 1] THEN GO TO 2070
@@ -23,12 +23,12 @@
 2070 NEXT J
 2080 NEXT I
 2090 RETURN
-3000 REM Create random list of [N] integers
+3000 REM Create random list of N integers
 3030 FOR I = 1 TO N
 3040 LET A[I] = FLOOR(RAND(100))
 3070 NEXT I
 3090 RETURN
-4000 REM Print the list [A]
+4000 REM Print the list A
 4010 FOR I = 1 TO N
 4020 PRINT A[I];
 4030 PRINT ", ";

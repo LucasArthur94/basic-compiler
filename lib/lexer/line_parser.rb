@@ -29,7 +29,7 @@ class LineParser
   def parse_lines
     self.read
 
-    simple_lines = @content.split("\n")
+    simple_lines = @content.split(/(?<=\n)/)
     lines = LinkedList::List.new
 
     simple_lines.each do |line|
