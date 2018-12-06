@@ -126,16 +126,16 @@ class NumberRecognizer
           tokenized_lines.push(classified_token)
         end
       else
+        if self.partial_recognition?
+          self.finishing_number
+          tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number))
+        else
+          self.cancel_recognizing
+          token_stack.each { |token| tokenized_lines.push(token) }
+          token_stack = []
+        end
+        tokenized_lines.push(classified_token)
       end
-    end
-
-    if self.partial_recognition?
-      self.finishing_number
-      tokenized_lines.push(Token.new(build_string_by_tokens(token_stack), :number))
-    else
-      self.cancel_recognizing
-      token_stack.each { |token| tokenized_lines.push(token) }
-      token_stack = []
     end
 
     tokenized_lines

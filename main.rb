@@ -48,6 +48,10 @@ def main
   reserved_keywords = ReservedKeywords.new(tokens_per_line)
   tokens_per_line = reserved_keywords.build_tokens
 
+  # Identificadores
+  identifier = Identifier.new(tokens_per_line)
+  tokens_per_line = identifier.build_tokens
+
   # Inteiros
   integer_recognizer = IntegerRecognizer.new(tokens_per_line)
   tokens_per_line = integer_recognizer.build_tokens
@@ -55,10 +59,6 @@ def main
   # Números
   number_recognizer = NumberRecognizer.new(tokens_per_line)
   tokens_per_line = number_recognizer.build_tokens
-
-  # Identificadores
-  identifier = Identifier.new(tokens_per_line)
-  tokens_per_line = identifier.build_tokens
 
   # Impressão dos Tokens
   tokens_per_line.each do |token|

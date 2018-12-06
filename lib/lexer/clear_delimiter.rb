@@ -33,7 +33,11 @@ class ClearDelimiter
     @tokens.each do |classified_token|
       case classified_token.type
       when :delimiter
-        next
+        if classified_token.string != "\n"
+          next
+        else
+          tokenized_lines.push(classified_token)
+        end
       else
         tokenized_lines.push(classified_token)
       end
