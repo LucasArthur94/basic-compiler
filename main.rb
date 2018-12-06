@@ -8,8 +8,11 @@ require_relative 'lib/lexer/ascii_categorizer'
 
 require_relative 'lib/lexer/string_builder'
 require_relative 'lib/lexer/rem_builder'
-
-require_relative 'lib/lexer/token_rebuilder'
+require_relative 'lib/lexer/clear_delimiter'
+require_relative 'lib/lexer/reserved_keywords'
+require_relative 'lib/lexer/identifier'
+require_relative 'lib/lexer/integer'
+require_relative 'lib/lexer/number_recognizer'
 
 def main
   # Nível 0 de abstração
@@ -29,7 +32,6 @@ def main
   chars_classified_per_line = char_classifier.classify_char_all_lines
 
   # Nível 5 de abstração - vários motores de eventos
-
   # Classificação de Strings
   string_builder = StringBuilder.new(chars_classified_per_line)
   tokens_per_line = string_builder.build_tokens
@@ -42,9 +44,21 @@ def main
   clear_delimiter = ClearDelimiter.new(tokens_per_line)
   tokens_per_line = clear_delimiter.build_tokens
 
-  # # Nível 6 de abstração
-  # token_rebuilder = TokenRebuilder.new(tokens_per_line)
-  # tokens_reclassified_per_line = token_rebuilder.rebuild_tokens
+  # Identificador de palavras reservadas
+  reserved_keywords = ReservedKeywords.new(tokens_per_line)
+  tokens_per_line = reserved_keywords.build_tokens
+
+  # Inteiros
+  integer_recognizer = IntegerRecognizer.new(tokens_per_line)
+  tokens_per_line = integer_recognizer.build_tokens
+
+  # Números
+  number_recognizer = NumberRecognizer.new(tokens_per_line)
+  tokens_per_line = number_recognizer.build_tokens
+
+  # Identificadores
+  identifier = Identifier.new(tokens_per_line)
+  tokens_per_line = identifier.build_tokens
 
   # Impressão dos Tokens
   tokens_per_line.each do |token|

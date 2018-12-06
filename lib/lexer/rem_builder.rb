@@ -1,7 +1,6 @@
 require 'aasm'
 require 'linked-list'
 require_relative '../helpers/token'
-require_relative '../helpers/automata'
 
 include AASM
 include LinkedList
