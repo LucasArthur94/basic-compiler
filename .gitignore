@@ -1,0 +1,26 @@
+# Ruby
+/.bundle/
+/vendor/bundle/
+.ruby-version
+.ruby-gemset
+
+# Elixir / Mix
+/basic_compiler/_build/
+/basic_compiler/deps/
+/basic_compiler/*.ez
+/basic_compiler/doc/
+/basic_compiler/.fetch
+/basic_compiler/erl_crash.dump
+/basic_compiler/basic_compiler
+/basic_compiler/basic_compiler-*.tar
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
